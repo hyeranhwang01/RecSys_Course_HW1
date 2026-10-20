@@ -8,6 +8,28 @@ Experiments with [RecBole](https://github.com/RUCAIBox/RecBole) on the `ml-100k`
 2. Latent factor model: BPR, embedding size ∈ {32, 64, 128, 256}, regularization ∈ {0.01, 0.1, 0.5}
 3. Item-to-item CF: SLIM (SLIMElastic), EASE vs. ItemKNN
 
+## Results
+
+Top-10 metrics on ml-100k, best setting for each model.
+
+| Model | Setting | NDCG@10 | Recall@10 |
+|---|---|---|---|
+| ItemKNN (item) | k = 100 | 0.281 | 0.240 |
+| ItemKNN (user) | k = 100 | 0.282 | 0.240 |
+| BPR + L2 | dim 64, λ = 0.01 | 0.304 | 0.253 |
+| SLIMElastic | default | 0.326 | 0.273 |
+| EASE | default | 0.324 | 0.278 |
+
+KNN did best around k = 100 for both the item-based and user-based versions, and got worse again at k = 500. The user-based version was much weaker with very few neighbors (NDCG@10 of 0.111 at k = 1, compared to 0.204 for item-based).
+
+For BPR, the embedding size barely mattered (32 to 256 moved NDCG@10 by less than 0.006), but regularization made a big difference: NDCG@10 dropped from 0.304 at λ = 0.01 to 0.116 at λ = 0.5. In hindsight the embedding-size sweep should have used a smaller λ, since 0.1 turned out not to be a good value.
+
+SLIM and EASE came out on top, roughly 15% higher NDCG@10 than the best KNN setting.
+
+| k for KNN | λ for BPR |
+|---|---|
+| ![](results/fig1_knn_k.png) | ![](results/fig3_bpr_reg.png) |
+
 ## Setup
 
 ```bash
